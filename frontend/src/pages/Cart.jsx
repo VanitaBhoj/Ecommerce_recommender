@@ -1,29 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { api } from "../api.js";
 import { useAuth } from "../AuthContext.jsx";
+import { clearCartLines, loadCartLines, saveCartLines } from "../lib/cartStorage.js";
 
 export default function Cart() {
   const { user, refresh } = useAuth();
-  const [params] = useSearchParams();
-  const [lines, setLines] = useState([]);
+  const location = useLocation();
+  const [params, setParams] = useSearchParams();
+  const [lines, setLines] = useState(loadCartLines);
   const [redeem, setRedeem] = useState(0);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const addProductId = useMemo(
+    () => new URLSearchParams(location.search).get("add"),
+    [location.search]
+  );
 
   useEffect(() => {
-    const add = params.get("add");
-    if (!add) return;
+    if (!addProductId) return;
     setLines((prev) => {
-      const ix = prev.findIndex((l) => l.productId === add);
+      const ix = prev.findIndex((l) => l.productId === addProductId);
       if (ix >= 0) {
         const next = [...prev];
         next[ix] = { ...next[ix], quantity: next[ix].quantity + 1 };
         return next;
       }
-      return [...prev, { productId: add, quantity: 1, _name: null, _price: null, _eco: null }];
+      return [
+        ...prev,
+        { productId: addProductId, quantity: 1, _name: null, _price: null, _eco: null },
+      ];
     });
-  }, [params]);
+    // Clear the query param so clicking the same "Add to cart" link again works reliably.
+    setParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("add");
+      return next;
+    });
+  }, [addProductId, setParams]);
+
+  useEffect(() => {
+    saveCartLines(lines);
+  }, [lines]);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,6 +94,7 @@ export default function Cart() {
       await api(`/api/orders/${data.order._id}/confirm-payment`, { method: "POST" });
       setMsg(`Order ${data.order._id} paid (mock). Eco-points earned: ${data.order.ecoPointsEarned}`);
       setLines([]);
+      clearCartLines();
       setRedeem(0);
       await refresh();
     } catch (e) {

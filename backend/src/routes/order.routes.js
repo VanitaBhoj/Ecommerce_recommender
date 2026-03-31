@@ -4,6 +4,7 @@ import { Product } from "../models/Product.model.js";
 import { Order } from "../models/Order.model.js";
 import { User } from "../models/User.model.js";
 import { computeEcoPointsForOrder, ecoPointsToDiscountCents } from "../lib/ecoPoints.js";
+import { expandCatalogFromSignals } from "../services/catalogExpansion.js";
 
 const router = Router();
 
@@ -116,6 +117,13 @@ router.post("/:id/confirm-payment", requireAuth, async (req, res, next) => {
     order.paymentIntentId = `mock_${order._id}`;
     await order.save();
     await User.findByIdAndUpdate(req.userId, { $inc: { ecoPoints: order.ecoPointsEarned } });
+    const purchased = await Product.find({
+      _id: { $in: order.lines.map((line) => line.productId) },
+    }).lean();
+    await expandCatalogFromSignals({
+      preferredCategories: purchased.map((p) => p.category),
+      preferredTags: purchased.flatMap((p) => p.tags || []),
+    });
     res.json(order);
   } catch (e) {
     next(e);

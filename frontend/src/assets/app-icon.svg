@@ -1,0 +1,14 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ecommerce Recommender App Icon">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3ad29f" />
+      <stop offset="100%" stop-color="#1c8a62" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="20" fill="url(#grad)"/>
+  <path d="M40 45h40l-5 20h-30z" fill="#fff" opacity="0.9" />
+  <circle cx="55" cy="80" r="6" fill="#fff"/>
+  <circle cx="75" cy="80" r="6" fill="#fff"/>
+  <path d="M46 44 L40 30 L80 30 L74 44" fill="#0f1412" opacity="0.35" />
+  <path d="M50 36 h20" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+</svg>

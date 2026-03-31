@@ -4,6 +4,8 @@ import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Cart from "./pages/Cart.jsx";
+import ProductDetails from "./pages/ProductDetails.jsx";
+import Admin from "./pages/Admin.jsx";
 import "./index.css";
 
 function Shell() {
@@ -31,6 +33,7 @@ function Shell() {
             </>
           ) : (
             <>
+              <Link to="/admin">Admin</Link>
               <Link to="/login">Sign in</Link>
               <Link className="cta small" to="/register">
                 Join
@@ -45,11 +48,13 @@ function Shell() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/products/:id" element={<ProductDetails />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
       <footer className="footer">
-        <p>
-          Hybrid ML recommendations with eco-aware ranking — MERN + FastAPI scaffold.
+        <p className="footer-admins">
+          Admins: Vanita Bhoj · Pankaj Singh Bora · Ajay Singh Negi · Saksham Bartwal
         </p>
       </footer>
     </div>
